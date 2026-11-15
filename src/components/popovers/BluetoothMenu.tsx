@@ -1,0 +1,176 @@
+import { useState } from "react";
+import { FiCheck, FiChevronRight, FiHeadphones } from "react-icons/fi";
+import { BsKeyboard, BsMouse } from "react-icons/bs";
+import { useAppContext } from "../../context/AppContext";
+import Toggle from "../ui/Toggle";
+
+const BluetoothMenu = () => {
+  const app = useAppContext();
+  const darkMode = app.theme === "dark";
+  const [btOn, setBtOn] = useState(true);
+
+  return (
+    <div
+      className={`flex flex-col w-full h-full rounded-sm border text-[13px] select-none transition-colors ${
+        darkMode
+          ? "bg-[#090909] border-[#171717] text-[#F1F3F4] shadow-[0_12px_32px_rgba(0,0,0,0.45)]"
+          : "bg-white border-[#E5E7EB] text-[#111827] shadow-[0_10px_25px_rgba(0,0,0,0.12)]"
+      }`}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 pt-3.5 pb-2.5">
+        <span className="text-[14px] font-semibold tracking-[-0.01em]">
+          Bluetooth
+        </span>
+        <Toggle isOn={btOn} onToggle={() => setBtOn(!btOn)} />
+      </div>
+
+      {btOn && (
+        <>
+          {/* MY DEVICES */}
+          <div
+            className={`px-4 pt-1 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.04em] ${
+              darkMode ? "text-[#9AA0A6]" : "text-[#6B7280]"
+            }`}
+          >
+            MY DEVICES
+          </div>
+
+          <div className="flex flex-col gap-1.5 px-2.5">
+            {/* Connected Item 1: Wireless Headphones */}
+            <div
+              className={`flex items-center justify-between px-2.5 py-2 rounded-md cursor-pointer transition-colors ${
+                darkMode
+                  ? "bg-[#233245] hover:bg-[#293A50]"
+                  : "bg-[#EEF4FC] hover:bg-[#E4EEFA]"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-7 h-7 rounded-sm bg-[#1A73E8] text-white shrink-0">
+                  <FiHeadphones size={15} strokeWidth={2.2} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-medium text-[13px] leading-[1.25]">
+                    Wireless Headphones
+                  </span>
+                  <span
+                    className={`text-[11px] leading-[1.25] mt-0.5 ${
+                      darkMode ? "text-[#9AA0A6]" : "text-[#6B7280]"
+                    }`}
+                  >
+                    Connected · 85%
+                  </span>
+                </div>
+              </div>
+              <FiCheck
+                size={15}
+                className={darkMode ? "text-[#8AB4F8]" : "text-[#1A73E8]"}
+              />
+            </div>
+
+            {/* Connected Item 2: Wireless Mouse */}
+            <div
+              className={`flex items-center justify-between px-2.5 py-2 rounded-sm cursor-pointer transition-colors ${
+                darkMode
+                  ? "bg-[#233245] hover:bg-[#293A50]"
+                  : "bg-[#EEF4FC] hover:bg-[#E4EEFA]"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-7 h-7 rounded-[7px] bg-[#1A73E8] text-white shrink-0">
+                  <BsMouse size={15} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-medium text-[13px] leading-[1.25]">
+                    Wireless Mouse
+                  </span>
+                  <span
+                    className={`text-[11px] leading-[1.25] mt-0.5 ${
+                      darkMode ? "text-[#9AA0A6]" : "text-[#6B7280]"
+                    }`}
+                  >
+                    Connected · 72%
+                  </span>
+                </div>
+              </div>
+              <FiCheck
+                size={15}
+                className={darkMode ? "text-[#8AB4F8]" : "text-[#1A73E8]"}
+              />
+            </div>
+          </div>
+
+          {/* NEARBY DEVICES */}
+          <div
+            className={`px-4 pt-3.5 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.04em] ${
+              darkMode ? "text-[#9AA0A6]" : "text-[#6B7280]"
+            }`}
+          >
+            NEARBY DEVICES
+          </div>
+
+          <div className="flex flex-col px-2.5 pb-2">
+            {/* Disconnected Item: Wireless Keyboard */}
+            <div
+              className={`flex items-center justify-between px-2.5 py-2 rounded-sm cursor-pointer transition-colors ${
+                darkMode ? "hover:bg-white/5" : "hover:bg-black/[0.04]"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={`flex items-center justify-center w-7 h-7 rounded-[7px] shrink-0 ${
+                    darkMode
+                      ? "bg-[#35373B] text-[#9AA0A6]"
+                      : "bg-[#F1F3F4] text-[#5F6368]"
+                  }`}
+                >
+                  <BsKeyboard size={15} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-medium text-[13px] leading-[1.25]">
+                    Wireless Keyboard
+                  </span>
+                  <span
+                    className={`text-[11px] leading-[1.25] mt-0.5 ${
+                      darkMode ? "text-[#9AA0A6]" : "text-[#6B7280]"
+                    }`}
+                  >
+                    Not connected
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Divider & Settings Link */}
+          <div
+            className={`w-full h-px ${
+              darkMode ? "bg-[#171717]" : "bg-[#E5E7EB]"
+            }`}
+          />
+          <div className="p-1.5">
+            <div
+              className={`flex items-center justify-between px-2.5 py-2 rounded-[8px] cursor-pointer transition-colors ${
+                darkMode ? "hover:bg-white/5" : "hover:bg-black/[0.04]"
+              }`}
+            >
+              <span
+                className={`text-[13px] ${
+                  darkMode ? "text-[#E8EAED]" : "text-[#1F2937]"
+                }`}
+              >
+                Bluetooth settings...
+              </span>
+              <FiChevronRight
+                size={14}
+                className={darkMode ? "text-[#9AA0A6]" : "text-[#6B7280]"}
+              />
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default BluetoothMenu;
