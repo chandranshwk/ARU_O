@@ -66,7 +66,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     notifications: { h: 451, w: 320 },
     "control-center": { h: 451, w: 350 },
     spotlight: { h: 301, w: 400 },
-    wifi: { h: 364, w: 284 },
+    wifi: { h: 520, w: 284 },
     account: { h: 292, w: 264 },
     "active-apps": { h: 346, w: 300 },
   };

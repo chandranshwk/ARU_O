@@ -1,12 +1,14 @@
 import { useAppContext } from "../context/AppContext";
 import {
   FiBattery,
+  FiBatteryCharging,
   FiBell,
   FiBluetooth,
   FiSearch,
   FiSliders,
   FiWifi,
 } from "react-icons/fi";
+import { useBattery } from "../hooks/useBattery";
 
 const TopBarRight = () => {
   const app = useAppContext();
@@ -17,7 +19,10 @@ const TopBarRight = () => {
 
   // Helper for the active highlight state
   const isActive = (type: string) => app.activePopover === type;
-  const activeClass = "bg-black/10 dark:bg-white/20 text-black dark:text-white";
+
+  const activeClass = "bg-[#007AFF] text-white shadow-sm";
+
+  const { percentage, is_charging } = useBattery();
 
   return (
     <div className={`flex items-center text-[12px] font-medium ${textColor}`}>
@@ -49,40 +54,45 @@ const TopBarRight = () => {
             isActive("battery") ? activeClass : "hover:opacity-100"
           }`}
         >
-          <span className="text-[11px]">100%</span>
-          <FiBattery size={16} />
-        </div>
-      </div>
-
-      <div className="flex items-center ">
-        {/* Spotlight Search */}
-        <div
-          onClick={(e) => app.openPopover("spotlight", e)}
-          className={`cursor-pointer transition-colors p-1 rounded-md ${
-            isActive("spotlight") ? activeClass : "hover:opacity-100"
-          }`}
-        >
-          <FiSearch size={14} />
+          {" "}
+          <span className="text-[11px]">{Math.round(percentage)}%</span>
+          {is_charging ? (
+            <FiBatteryCharging size={16} />
+          ) : (
+            <FiBattery size={16} />
+          )}
         </div>
 
-        {/* Control Center */}
-        <div
-          onClick={(e) => app.openPopover("control-center", e)}
-          className={`cursor-pointer transition-colors p-1 rounded-md ${
-            isActive("control-center") ? activeClass : "hover:opacity-100"
-          }`}
-        >
-          <FiSliders size={14} />
-        </div>
+        <div className="flex items-center ">
+          {/* Spotlight Search */}
+          <div
+            onClick={(e) => app.openPopover("spotlight", e)}
+            className={`cursor-pointer transition-colors p-1 rounded-md ${
+              isActive("spotlight") ? activeClass : "hover:opacity-100"
+            }`}
+          >
+            <FiSearch size={14} />
+          </div>
 
-        {/* Notification Center */}
-        <div
-          onClick={(e) => app.openPopover("notifications", e)}
-          className={`cursor-pointer transition-colors p-1 rounded-md ${
-            isActive("notifications") ? activeClass : "hover:opacity-100"
-          }`}
-        >
-          <FiBell size={14} />
+          {/* Control Center */}
+          <div
+            onClick={(e) => app.openPopover("control-center", e)}
+            className={`cursor-pointer transition-colors p-1 rounded-md ${
+              isActive("control-center") ? activeClass : "hover:opacity-100"
+            }`}
+          >
+            <FiSliders size={14} />
+          </div>
+
+          {/* Notification Center */}
+          <div
+            onClick={(e) => app.openPopover("notifications", e)}
+            className={`cursor-pointer transition-colors p-1 rounded-md ${
+              isActive("notifications") ? activeClass : "hover:opacity-100"
+            }`}
+          >
+            <FiBell size={14} />
+          </div>
         </div>
       </div>
     </div>

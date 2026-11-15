@@ -69,3 +69,35 @@ body,
   animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   transform-origin: top center;
 }
+
+/* Custom macOS-style scrollbar */
+.mac-scrollbar::-webkit-scrollbar {
+  width: 6px; /* Extremely thin */
+}
+
+.mac-scrollbar::-webkit-scrollbar-track {
+  background: transparent; /* No background track */
+}
+
+.mac-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15); /* Faint grey for light mode */
+  border-radius: 10px;
+}
+
+.mac-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3); /* Darker when hovering */
+}
+
+/* Dark mode specific scrollbar */
+.dark .mac-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.15); /* Faint white for dark mode */
+}
+
+.dark .mac-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Hide the up/down arrows (buttons) completely */
+.mac-scrollbar::-webkit-scrollbar-button {
+  display: none;
+}
