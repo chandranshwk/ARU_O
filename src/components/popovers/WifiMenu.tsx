@@ -8,7 +8,7 @@ import {
 import { invoke } from "@tauri-apps/api/core";
 import { useAppContext } from "../../context/AppContext";
 import Toggle from "../ui/Toggle";
-import { useWifi, AvailableNetwork } from "../../hooks/useWifi";
+import { useWifi } from "../../hooks/useWifi";
 
 // Helper component to draw the 3 signal bars like macOS
 const SignalBars = ({

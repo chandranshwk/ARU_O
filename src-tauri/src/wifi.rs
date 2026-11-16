@@ -3,7 +3,10 @@ use std::process::Command;
 use std::time::Duration;
 use tauri::{AppHandle, Emitter};
 
-// NEW: Create a struct just for the other networks
+// ADD THIS IMPORT FOR WINDOWS
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
+
 #[derive(Serialize, Clone)]
 pub struct AvailableNetwork {
     pub ssid: String,
@@ -24,7 +27,12 @@ fn get_wifi_info() -> WifiPayload {
     let mut available_networks = Vec::new();
 
     // 1. Get Connected Status
-    if let Ok(out) = Command::new("netsh").args(&["wlan", "show", "interfaces"]).output() {
+    let mut cmd_interfaces = Command::new("netsh");
+    cmd_interfaces.args(&["wlan", "show", "interfaces"]);
+    #[cfg(target_os = "windows")]
+    cmd_interfaces.creation_flags(0x08000000); // HIDE WINDOW
+
+    if let Ok(out) = cmd_interfaces.output() {
         let text = String::from_utf8_lossy(&out.stdout);
         for line in text.lines() {
             let line = line.trim();
@@ -43,10 +51,14 @@ fn get_wifi_info() -> WifiPayload {
         ssid = "Disconnected".to_string();
     }
 
-    // 2. Get Available Networks (Parsing Signal & Security)
-    if let Ok(out) = Command::new("netsh").args(&["wlan", "show", "networks"]).output() {
+    // 2. Get Available Networks
+    let mut cmd_networks = Command::new("netsh");
+    cmd_networks.args(&["wlan", "show", "networks"]);
+    #[cfg(target_os = "windows")]
+    cmd_networks.creation_flags(0x08000000); // HIDE WINDOW
+
+    if let Ok(out) = cmd_networks.output() {
         let text = String::from_utf8_lossy(&out.stdout);
-        
         let mut current_ssid = String::new();
         let mut current_signal = 0;
         let mut current_secured = false;
@@ -54,10 +66,7 @@ fn get_wifi_info() -> WifiPayload {
 
         for line in text.lines() {
             let line = line.trim();
-            
-            // Start of a new network
             if line.starts_with("SSID") && line.contains(':') {
-                // If we were parsing a network, save it before starting a new one
                 if parsing_network && !current_ssid.is_empty() && current_ssid != ssid {
                     available_networks.push(AvailableNetwork {
                         ssid: current_ssid.clone(),
@@ -65,7 +74,6 @@ fn get_wifi_info() -> WifiPayload {
                         is_secured: current_secured,
                     });
                 }
-                
                 if let Some(val) = line.split(':').nth(1) {
                     current_ssid = val.trim().to_string();
                     parsing_network = true;
@@ -73,25 +81,17 @@ fn get_wifi_info() -> WifiPayload {
                     current_secured = false;
                 }
             }
-            
-            // Get Authentication (Security Type)
             if parsing_network && line.starts_with("Authentication") {
                 if let Some(val) = line.split(':').nth(1) {
-                    let auth = val.trim();
-                    current_secured = !auth.contains("Open"); // If it doesn't say "Open", it's secured
+                    current_secured = !val.trim().contains("Open");
                 }
             }
-            
-            // Get Signal Strength
             if parsing_network && line.starts_with("Signal") {
                 if let Some(val) = line.split(':').nth(1) {
-                    let sig_str = val.trim().replace("%", "");
-                    current_signal = sig_str.parse().unwrap_or(0);
+                    current_signal = val.trim().replace("%", "").parse().unwrap_or(0);
                 }
             }
         }
-        
-        // Push the last network in the list
         if parsing_network && !current_ssid.is_empty() && current_ssid != ssid {
             available_networks.push(AvailableNetwork {
                 ssid: current_ssid,
@@ -111,34 +111,40 @@ pub fn get_wifi() -> WifiPayload {
 
 #[tauri::command]
 pub fn disconnect_wifi() -> Result<(), String> {
-    Command::new("netsh")
-        .args(&["wlan", "disconnect"])
-        .output()
-        .map_err(|e| e.to_string())?;
+    let mut cmd = Command::new("netsh");
+    cmd.args(&["wlan", "disconnect"]);
+    #[cfg(target_os = "windows")]
+    cmd.creation_flags(0x08000000); // HIDE WINDOW
+
+    cmd.output().map_err(|e| e.to_string())?;
     Ok(())
 }
 
 #[tauri::command]
 pub fn connect_wifi(ssid: String) -> Result<(), String> {
-    let output = Command::new("netsh")
-        .args(&["wlan", "connect", &format!("name={}", ssid)])
-        .output()
-        .map_err(|e| e.to_string())?;
+    let mut cmd = Command::new("netsh");
+    cmd.args(&["wlan", "connect", &format!("name={}", ssid)]);
+    #[cfg(target_os = "windows")]
+    cmd.creation_flags(0x08000000); // HIDE WINDOW
 
+    let output = cmd.output().map_err(|e| e.to_string())?;
     let stdout = String::from_utf8_lossy(&output.stdout);
     if stdout.contains("completed successfully") {
         Ok(())
     } else {
-        Err("Failed to connect. Password may be required.".into())
+        Err("Failed to connect".into())
     }
 }
 
 #[tauri::command]
 pub fn open_wifi_settings() -> Result<(), String> {
-    Command::new("cmd")
-        .args(&["/C", "start", "ms-settings:network-wifi"])
-        .spawn()
-        .map_err(|e| e.to_string())?;
+    // We use explorer.exe here instead of cmd /C start to avoid console flashes
+    let mut cmd = Command::new("explorer.exe");
+    cmd.args(&["ms-settings:network-wifi"]);
+    #[cfg(target_os = "windows")]
+    cmd.creation_flags(0x08000000); // HIDE WINDOW
+
+    cmd.spawn().map_err(|e| e.to_string())?;
     Ok(())
 }
 
@@ -147,7 +153,6 @@ pub fn start_wifi_polling(handle: AppHandle) {
         loop {
             let info = get_wifi_info();
             let _ = handle.emit("wifi-changed", info);
-            // 3 seconds is good because scanning networks takes a bit of CPU
             std::thread::sleep(Duration::from_secs(3));
         }
     });

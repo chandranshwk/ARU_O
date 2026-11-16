@@ -2,6 +2,7 @@ mod appbar;
 mod popover;
 mod battery;
 mod wifi;
+mod theme; 
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -12,8 +13,9 @@ pub fn run() {
             battery::get_battery,
             wifi::get_wifi,
             wifi::disconnect_wifi,
-            wifi::connect_wifi, // <-- ADD THIS
-            wifi::open_wifi_settings
+            wifi::connect_wifi, 
+            wifi::open_wifi_settings,
+            theme::set_system_theme 
         ]) 
         .setup(|app| {
             appbar::setup_appbar(app);
