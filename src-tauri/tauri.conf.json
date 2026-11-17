@@ -39,6 +39,20 @@
         "visible": false,
         "shadow": false,
         "focus": true
+      },
+      {
+        "label": "dock",
+        "title": "Dock",
+        "width": 440,
+        "height": 48,
+        "decorations": false,
+        "transparent": true,
+        "backgroundColor": "#00000000",
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "resizable": false,
+        "visible": false,
+        "shadow": false
       }
     ],
     "security": {

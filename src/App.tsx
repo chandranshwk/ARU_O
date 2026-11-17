@@ -11,6 +11,7 @@ import BatteryMenu from "./components/popovers/BatteryMenu";
 import ControlCenter from "./components/popovers/ControlCenter";
 import NotificationsMenu from "./components/popovers/NotificationsMenu";
 import ProfileMenu from "./components/popovers/ProfileMenu";
+import Dock, { DockApp } from "./components/Dock";
 
 function App() {
   const windowLabel = getCurrentWindow().label;
@@ -19,6 +20,51 @@ function App() {
 
   const app = useAppContext();
   const darkMode = app.theme === "dark";
+
+  const INITIAL_APPS: DockApp[] = [
+    {
+      id: "start",
+      name: "Start",
+      icon: "https://icons8.com",
+    },
+    {
+      id: "explorer",
+      name: "File Explorer",
+      icon: "https://icons8.com",
+      isOpen: true,
+      isActive: true,
+    },
+    {
+      id: "chrome-work",
+      name: "Google Chrome",
+      icon: "https://icons8.com",
+      isOpen: true,
+    },
+    {
+      id: "notion",
+      name: "Notion",
+      icon: "https://icons8.com",
+    },
+    {
+      id: "vscode",
+      name: "Visual Studio Code",
+      icon: "https://icons8.com",
+      isOpen: true,
+    },
+    {
+      id: "whatsapp",
+      name: "WhatsApp",
+      icon: "https://icons8.com",
+      isOpen: true,
+      badge: 1,
+    },
+    {
+      id: "chrome-personal",
+      name: "Chrome (Profile)",
+      icon: "https://icons8.com",
+      profileAvatar: "https://dicebear.com",
+    },
+  ];
 
   useEffect(() => {
     if (windowLabel === "popover") {
@@ -53,6 +99,23 @@ function App() {
         {popoverType === "notifications" && <NotificationsMenu />}
       </div>
     );
+  }
+
+  if (windowLabel === "dock") {
+    const [apps, setApps] = useState<DockApp[]>(INITIAL_APPS);
+
+    const handleAppClick = (clickedApp: DockApp) => {
+      setApps((prev) =>
+        prev.map((app) => ({
+          ...app,
+          isOpen: app.id === clickedApp.id ? true : app.isOpen,
+          isActive: app.id === clickedApp.id,
+          badge: app.id === clickedApp.id ? undefined : app.badge,
+        })),
+      );
+    };
+
+    return <Dock apps={apps} onAppClick={handleAppClick} />;
   }
 
   return (

@@ -3,6 +3,7 @@ mod popover;
 mod battery;
 mod wifi;
 mod theme; 
+mod dock;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -15,13 +16,15 @@ pub fn run() {
             wifi::disconnect_wifi,
             wifi::connect_wifi, 
             wifi::open_wifi_settings,
-            theme::set_system_theme 
+            theme::set_system_theme,
+            dock::handle_dock_click
         ]) 
         .setup(|app| {
             appbar::setup_appbar(app);
             popover::setup_popover(app);
             battery::start_battery_polling(app.handle().clone());
             wifi::start_wifi_polling(app.handle().clone());
+            dock::setup_dock(app);
             
             Ok(())
         })

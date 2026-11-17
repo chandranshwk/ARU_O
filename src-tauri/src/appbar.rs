@@ -39,14 +39,11 @@ pub fn setup_appbar(app: &tauri::App) {
                         ..Default::default()
                     };
                     
-                    // 1. Register AppBar
                     SHAppBarMessage(ABM_NEW, &mut abd);
                     
-                    // 2. THE FIX: Force WS_EX_LAYERED back onto the window!
                     let ex_style = GetWindowLongPtrW(hwnd, GWL_EXSTYLE);
                     SetWindowLongPtrW(hwnd, GWL_EXSTYLE, ex_style | WS_EX_LAYERED.0 as isize);
                     
-                    // 3. Set AppBar Position
                     abd.uEdge = ABE_TOP as u32;
                     abd.rc = RECT {
                         left: pos_x,
@@ -59,7 +56,6 @@ pub fn setup_appbar(app: &tauri::App) {
             }
         }
         
-        // 4. Wait for Windows to finish docking, then ensure position is correct
         let window_clone = window.clone();
         std::thread::spawn(move || {
             std::thread::sleep(std::time::Duration::from_millis(150));
@@ -69,7 +65,6 @@ pub fn setup_appbar(app: &tauri::App) {
     
     window.show().unwrap();
     
-    // 5. Cleanup AppBar on exit
     let window_for_cleanup = window.clone();
     window.on_window_event(move |event| {
         if let tauri::WindowEvent::Destroyed = event {
